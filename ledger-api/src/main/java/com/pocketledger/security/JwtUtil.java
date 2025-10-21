@@ -20,7 +20,7 @@ public class JwtUtil {
         this.ttlMillis = ttlMinutes * 60_000L;
     }
 
-    public String issueToken(UUID userId){
+    public String issueToken(UUID userId) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .setSubject(userId.toString())
@@ -30,8 +30,8 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String parseSub(String token){
-        return  Jwts.parserBuilder().setSigningKey(key).build()
-                .parseClaimsJwt(token).getBody().getSubject();
+    public String parseSub(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build()
+                .parseClaimsJws(token).getBody().getSubject();
     }
 }
