@@ -17,10 +17,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     Optional<Transaction> findByExternalId(String externalId);
 
-    @Query(""" 
-     select coalesce(sum(case when t.type = 'CREDIT' then t.amount else -t.amount end), 0)
-     from Transaction t
-     where t.accountId = :accountId
-     """)
+    @Query("""
+         select coalesce(sum(case when t.type = com.pocketledger.domain.Transaction$Type.CREDIT
+                                  then t.amount else -t.amount end), 0)
+         from Transaction t
+         where t.accountId = :accountId
+         """)
     BigDecimal calcBalance(UUID accountId);
 }
