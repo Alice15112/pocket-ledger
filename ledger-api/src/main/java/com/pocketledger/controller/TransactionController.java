@@ -5,6 +5,8 @@ import com.pocketledger.domain.Transaction;
 import com.pocketledger.dto.BalanceView;
 import com.pocketledger.dto.TransactionCreateReq;
 import com.pocketledger.dto.TransactionView;
+import com.pocketledger.events.TransactionCreatedEvent;
+import com.pocketledger.messaging.TransactionEventPublisher;
 import com.pocketledger.repo.AccountRepository;
 import com.pocketledger.repo.TransactionRepository;
 import com.pocketledger.web.NotFoundException;
@@ -28,6 +30,7 @@ public class TransactionController {
 
     private final AccountRepository accounts;
     private final TransactionRepository txRepo;
+    private final TransactionEventPublisher publisher;
 
     // POST /accounts/{accountId}/transactions
     @PostMapping(
@@ -67,6 +70,17 @@ public class TransactionController {
                 .build();
 
         tx = txRepo.saveAndFlush(tx);
+
+        publisher.publish(new TransactionCreatedEvent(
+                tx.getId(),
+                tx.getAccountId(),
+                acc.getOwnerId(),
+                acc.getCurrency(),
+                tx.getAmount(),
+                tx.getType().name(),
+                tx.getExternalId(),
+                tx.getCreatedAt()
+        ));
 
         return ResponseEntity.ok(toView(tx));
     }
