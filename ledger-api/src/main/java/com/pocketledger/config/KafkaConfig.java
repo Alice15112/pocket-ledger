@@ -23,4 +23,13 @@ public class KafkaConfig {
                 .build();
     }
 
+    @Bean
+    NewTopic transactionsDltTopic() {
+        return TopicBuilder.name("pl.transactions.dlt")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
+
 }
